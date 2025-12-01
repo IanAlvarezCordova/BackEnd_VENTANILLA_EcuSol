@@ -1,0 +1,16 @@
+# Puerto local
+#SERVER_PORT=8083
+
+# URL del Core (Ya deployado en Render)
+# Nota: NO debe tener barra al final. Correcto: .../api/core
+#ECUSOL_CORE_URL=https://backend-core-ecusol.onrender.com/api/core
+
+# Base de Datos NEON
+# Nota: Apunta al esquema 'ecusol_ventanilla'
+#SPRING_DATASOURCE_URL=jdbc:postgresql://ep-still-firefly-ahhj35f3.c-3.us-east-1.aws.neon.tech:5432/neondb?sslmode=require&currentSchema=ecusol_ventanilla
+#SPRING_DATASOURCE_USERNAME=neondb_owner
+#SPRING_DATASOURCE_PASSWORD=npg_mw4Ln6Ncbqhz
+
+# JWT
+#JWT_SECRET=MiClaveSecretaSuperSeguraParaElBancoEcuSol2025
+#JWT_EXPIRATION_MS=86400000
