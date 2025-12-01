@@ -1,37 +1,33 @@
-//ubi: src/main/java/com/ecusol/ventanilla/exception/GlobalExceptionHandler.java
 package com.ecusol.ventanilla.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Captura errores de lógica (Credenciales, Validaciones)
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException ex) {
-        Map<String, String> error = new HashMap<>();
-        error.put("error", ex.getMessage()); // Mensaje claro para el front
+    public ResponseEntity<Map<String, Object>> handleRuntimeException(RuntimeException ex) {
+        Map<String, Object> errorBody = new HashMap<>();
+        String mensajeOriginal = ex.getMessage();
+        String mensajeLimpio = mensajeOriginal.replace("java.lang.RuntimeException: ", "")
+                                              .replace("500 Internal Server Error: ", "")
+                                              .replace("\"", "");
+        String titulo = "Error de Operación";
+        if (mensajeLimpio.toLowerCase().contains("saldo")) titulo = "Fondos Insuficientes";
+        if (mensajeLimpio.toLowerCase().contains("no existe")) titulo = "Cuenta no Encontrada";
+        if (mensajeLimpio.toLowerCase().contains("bloquead")) titulo = "Cuenta Bloqueada";
 
-        // Si es error de credenciales, devolvemos 401, si no 400
-        if (ex.getMessage().contains("Credenciales") || ex.getMessage().contains("bloqueado")) {
-            return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
-        }
+        errorBody.put("timestamp", LocalDateTime.now());
+        errorBody.put("status", HttpStatus.BAD_REQUEST.value());
+        errorBody.put("titulo", titulo);
+        errorBody.put("mensaje", mensajeLimpio);
 
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-    }
-
-    // Captura errores inesperados
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, String>> handleGeneralException(Exception ex) {
-        ex.printStackTrace(); // Imprimir en consola para que tú lo veas
-        Map<String, String> error = new HashMap<>();
-        error.put("error", "Error interno del servidor. Intente más tarde.");
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(errorBody, HttpStatus.BAD_REQUEST);
     }
 }

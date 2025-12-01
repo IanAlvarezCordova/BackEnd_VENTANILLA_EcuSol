@@ -5,36 +5,41 @@ import com.ecusol.ventanilla.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Service
 public class VentanillaService {
 
     @Autowired private CoreClient coreClient;
-
-    public ResumenClienteDTO buscarCliente(String cedula) {
-        return coreClient.buscarCliente(cedula);
-    }
-
-    public String realizarOperacion(VentanillaOpDTO op) {
-        // --- CORRECCIÓN DE MAPEO (CRÍTICO) ---
-        // Convertimos del DTO del Frontend al DTO del Core
-        TransaccionCajaRequest req = new TransaccionCajaRequest();
-        
-        req.setTipoOperacion(op.getTipoOperacion());
-        req.setCuentaOrigen(op.getNumeroCuentaOrigen());   // Mapeo explícito
-        req.setCuentaDestino(op.getNumeroCuentaDestino()); // Mapeo explícito
-        req.setMonto(op.getMonto());
-        req.setDescripcion(op.getDescripcion());
-
-        // Enviamos el objeto correcto al cliente HTTP
-        return coreClient.operar(req);
-    }
-    
     public InfoCuentaDTO validarCuenta(String numero) {
         return coreClient.validarCuenta(numero);
     }
 
-    // --- FUNCIONES ADMINISTRATIVAS ---
+public TransaccionResponse realizarTransaccion(TransaccionCajaRequest request) {
 
+    String respuestaCore = coreClient.operar(request); 
+
+    TransaccionResponse response = new TransaccionResponse();
+    response.setReferencia(extraerReferencia(respuestaCore)); 
+    response.setEstado("APROBADA");
+    response.setMensaje(respuestaCore);
+    response.setFecha(LocalDateTime.now().toString());
+    
+    response.setMonto(request.getMonto()); 
+
+    return response;
+}
+    private String extraerReferencia(String respuestaCore) {
+        if (respuestaCore != null && respuestaCore.contains(":")) {
+            String[] partes = respuestaCore.split(":");
+            return partes.length > 1 ? partes[1].trim() : UUID.randomUUID().toString();
+        }
+        return UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    }
+    public ResumenClienteDTO buscarCliente(String cedula) {
+        return coreClient.buscarCliente(cedula);
+    }
     public void cambiarEstadoCuenta(String cuenta, String estado) {
         coreClient.cambiarEstadoCuenta(cuenta, estado);
     }

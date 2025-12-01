@@ -10,8 +10,6 @@ public class CuentaResumenDTO {
     private BigDecimal saldo;
     private String estado;
     private Integer tipoCuentaId;
-    
-    // Helper visual para el front
     public String getTipo() {
         return tipoCuentaId == 1 ? "Ahorros" : "Corriente";
     }
