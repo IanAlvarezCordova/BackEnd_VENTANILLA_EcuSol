@@ -10,13 +10,13 @@ public class Empleado implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "empleado_id")
+    @Column(name = "empleadoid")
     private Integer empleadoId;
 
     @Column(name = "usuario", nullable = false, unique = true)
     private String usuario;
 
-    @Column(name = "password_hash", nullable = false)
+    @Column(name = "contrasenahash", nullable = false)
     private String passwordHash;
 
     @Column(name = "nombres", nullable = false)
@@ -25,7 +25,7 @@ public class Empleado implements Serializable {
     @Column(name = "apellidos", nullable = false)
     private String apellidos;
 
-    @Column(name = "sucursal_id", nullable = false)
+    @Column(name = "sucursalid", nullable = false)
     private Integer sucursalId;
 
     @Column(name = "activo")
