@@ -1,0 +1,17 @@
+target/
+.git
+.gitignore
+.mvn
+.env
+.env.local
+.DS_Store
+*.log
+node_modules/
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.classpath
+.project
+.settings/
